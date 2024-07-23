@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
-import { prisma } from "../lib/prisma";
+import { db } from "../lib/db";
 import dayjs from "dayjs";
 import nodemailer from "nodemailer";
 import { getMailClient } from "../lib/mail";
@@ -32,11 +32,19 @@ export async function createTrip(app: FastifyInstance) {
         throw new Error("Invalid trip end date");
       }
 
-      const trip = await prisma.trip.create({
+      const trip = await db.trip.create({
         data: {
           destination,
           starts_at,
           ends_at,
+          participants: {
+            create: {
+              name: owner_name,
+              email: owner_email,
+              is_owner: true,
+              is_confirmed: true,
+            },
+          },
         },
       });
 
