@@ -73,8 +73,22 @@ export async function createTrip(app: FastifyInstance) {
           name: owner_name,
           address: owner_email,
         },
-        subject: "Testando envio de email",
-        html: `<p>Teste de envio de email</p>`,
+        subject: `Confirme sua viagem para ${destination}`,
+        html: `
+          <div style="font-family: sans-serif; font-size: 16px; line-height: 1.6">
+            <p>
+              Você solicitou a criação de uma viagem para
+              <strong>${destination}</strong> nas datas de
+              <strong>16 a 27 de Agosto de 2024</strong>.
+            </p>
+            <p></p>
+            <p>Para confirmar sua viagem, clique no link abaixo:</p>
+            <p></p>
+            <p><a href="">Confirmar Viagem</a></p>
+            <p></p>
+            <p>Caso não saiba do que isso se trata, apenas ignore esse e-mail.</p>
+          </div>
+        `.trim(),
       });
 
       console.log(nodemailer.getTestMessageUrl(message));
