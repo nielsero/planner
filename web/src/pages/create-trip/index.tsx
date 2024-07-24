@@ -73,16 +73,16 @@ export function CreateTripPage() {
   }
 
   return (
-    <main className="h-screen flex items-center justify-center bg-pattern bg-no-repeat bg-center">
+    <div className="h-screen flex items-center justify-center bg-pattern bg-no-repeat bg-center">
       <div className="max-w-3xl w-full px-6 text-center space-y-10">
-        <div className="flex flex-col items-center gap-3">
+        <header className="flex flex-col items-center gap-3">
           <img src="/logo.svg" alt="planner logo" />
           <p className="text-zinc-300 text-lg">
             Convide seus amigos e planeje sua próxima viagem!
           </p>
-        </div>
+        </header>
 
-        <div className="space-y-4">
+        <main className="space-y-4">
           <DestinationAndDateStep
             isGuestsInputOpen={isGuestsInputOpen}
             openGuestsInput={openGuestsInput}
@@ -96,20 +96,22 @@ export function CreateTripPage() {
               openConfirmTripModal={openConfirmTripModal}
             />
           )}
-        </div>
+        </main>
 
-        <p className="text-sm text-zinc-500">
-          Ao planejar sua viagem pela Planner você automaticamente concorda{" "}
-          <br /> com nossos{" "}
-          <a className="text-zinc-300 underline" href="#">
-            termos de uso
-          </a>{" "}
-          e{" "}
-          <a className="text-zinc-300 underline" href="#">
-            politicas de privacidade
-          </a>
-          .
-        </p>
+        <footer>
+          <p className="text-sm text-zinc-500">
+            Ao planejar sua viagem pela Planner você automaticamente concorda{" "}
+            <br /> com nossos{" "}
+            <a className="text-zinc-300 underline" href="#">
+              termos de uso
+            </a>{" "}
+            e{" "}
+            <a className="text-zinc-300 underline" href="#">
+              politicas de privacidade
+            </a>
+            .
+          </p>
+        </footer>
       </div>
 
       {isGuestsModalOpen && (
@@ -127,6 +129,6 @@ export function CreateTripPage() {
           createTrip={createTrip}
         />
       )}
-    </main>
+    </div>
   );
 }
