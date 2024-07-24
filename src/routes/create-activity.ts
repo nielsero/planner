@@ -2,8 +2,6 @@ import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { db } from "../lib/db";
-import nodemailer from "nodemailer";
-import { getMailClient } from "../lib/mail";
 import { dayjs } from "../lib/dayjs";
 
 export async function createActivity(app: FastifyInstance) {
