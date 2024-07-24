@@ -131,9 +131,15 @@ export function App() {
                 onClick={openGuestsModal}
               >
                 <UserRoundPlus className="size-5 text-zinc-400" />
-                <span className="text-lg text-zinc-400 flex-1">
-                  Quem estará na viagem?
-                </span>
+                {emailsToInvite.length > 0 ? (
+                  <span className="text-lg text-zinc-100 flex-1">
+                    {emailsToInvite.length} pessoa(s) convidada(s)
+                  </span>
+                ) : (
+                  <span className="text-lg text-zinc-400 flex-1">
+                    Quem estará na viagem?
+                  </span>
+                )}
               </button>
 
               <div className="w-px h-6 bg-zinc-800"></div>
