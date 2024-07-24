@@ -7,6 +7,7 @@ import {
 import { createTrip } from "./routes/create-trip";
 import { confirmTrip } from "./routes/confirm-trip";
 import { confirmParticipant } from "./routes/confirm-participant";
+import { createActivity } from "./routes/create-activity";
 
 const app = fastify();
 
@@ -20,6 +21,7 @@ app.setSerializerCompiler(serializerCompiler);
 app.register(createTrip);
 app.register(confirmTrip);
 app.register(confirmParticipant);
+app.register(createActivity);
 
 app.listen({ port: 3333 }, () => {
   console.log("Server running!");
