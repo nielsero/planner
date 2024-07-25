@@ -26,6 +26,7 @@ export function ConfirmTripModal({
               />
             </button>
           </div>
+
           <p className="text-sm text-zinc-400">
             Para concluir a criação da viagem para{" "}
             <span className="font-semibold text-zinc-100">Maputo, MZ</span> nas
