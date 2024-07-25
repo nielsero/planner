@@ -20,14 +20,12 @@ export function CreateActivityModal({
     const title = formData.get("title") as string;
     const occursAt = formData.get("occurs_at") as string;
 
-    console.log({ title, occursAt });
-
     await api.post(`/trips/${tripId}/activities`, {
       title,
       occurs_at: occursAt,
     });
 
-    closeCreateActivityModal();
+    window.document.location.reload();
   }
 
   return (
