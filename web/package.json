@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.51.11",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.414.0",
@@ -20,6 +21,7 @@
     "tailwind-variants": "^0.2.1"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.51.13",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
