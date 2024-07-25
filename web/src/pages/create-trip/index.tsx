@@ -5,7 +5,18 @@ import { ConfirmTripModal } from "./confirm-trip-modal";
 import { DestinationAndDateStep } from "./steps/destination-and-date-step";
 import { InviteGuestsStep } from "./steps/invite-guests-step";
 import { DateRange } from "react-day-picker";
-import { api } from "../../lib/api";
+import { useMutation } from "@tanstack/react-query";
+import { z } from "zod";
+import { createTrip } from "../../api/create-trip";
+
+const createTripSchema = z.object({
+  destination: z.string().min(3),
+  starts_at: z.coerce.date(),
+  ends_at: z.coerce.date(),
+  owner_name: z.string(),
+  owner_email: z.string().email(),
+  emails_to_invite: z.array(z.string().email()),
+});
 
 export function CreateTripPage() {
   const navigate = useNavigate();
@@ -18,11 +29,11 @@ export function CreateTripPage() {
   const [ownerName, setOwnerName] = useState("");
   const [ownerEmail, setOwnerEmail] = useState("");
   const [eventDateRange, setEventDateRange] = useState<DateRange | undefined>();
+  const [emailsToInvite, setEmailsToInvite] = useState<string[]>([]);
 
-  const [emailsToInvite, setEmailsToInvite] = useState<string[]>([
-    "nielsero@example.com",
-    "john.doe@acme.com",
-  ]);
+  const { mutateAsync: createTripFn, isPending: isCreatingTrip } = useMutation({
+    mutationFn: createTrip,
+  });
 
   function openGuestsInput() {
     setIsGuestsInputOpen(true);
@@ -73,37 +84,36 @@ export function CreateTripPage() {
     );
   }
 
-  async function createTrip(event: FormEvent<HTMLFormElement>) {
+  async function handleCreateTrip(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!destination) {
+    try {
+      const trip = createTripSchema.parse({
+        destination,
+        starts_at: eventDateRange?.from,
+        ends_at: eventDateRange?.to,
+        owner_name: ownerName,
+        owner_email: ownerEmail,
+        emails_to_invite: emailsToInvite,
+      });
+
+      if (trip.emails_to_invite.length === 0) {
+        return;
+      }
+
+      const { tripId } = await createTripFn({
+        destination: trip.destination,
+        starts_at: trip.starts_at.toLocaleDateString(),
+        ends_at: trip.ends_at.toLocaleDateString(),
+        owner_name: trip.owner_name,
+        owner_email: trip.owner_email,
+        emails_to_invite: trip.emails_to_invite,
+      });
+
+      navigate(`/trips/${tripId}`);
+    } catch (error) {
       return;
     }
-
-    if (!eventDateRange?.from || !eventDateRange?.to) {
-      return;
-    }
-
-    if (emailsToInvite.length === 0) {
-      return;
-    }
-
-    if (!ownerName || !ownerEmail) {
-      return;
-    }
-
-    const response = await api.post("/trips", {
-      destination,
-      starts_at: eventDateRange.from,
-      ends_at: eventDateRange.to,
-      emails_to_invite: emailsToInvite,
-      owner_name: ownerName,
-      owner_email: ownerEmail,
-    });
-
-    const { tripId } = response.data;
-
-    navigate(`/trips/${tripId}`);
   }
 
   return (
@@ -163,9 +173,10 @@ export function CreateTripPage() {
       {isConfirmTripModalOpen && (
         <ConfirmTripModal
           closeConfirmTripModal={closeConfirmTripModal}
-          createTrip={createTrip}
+          createTrip={handleCreateTrip}
           setOwnerName={setOwnerName}
           setOwnerEmail={setOwnerEmail}
+          isCreatingTrip={isCreatingTrip}
         />
       )}
     </div>

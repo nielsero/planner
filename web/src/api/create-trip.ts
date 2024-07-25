@@ -9,6 +9,10 @@ type CreateTripRequest = {
   owner_email: string;
 };
 
+type CreateTripResponse = {
+  tripId: string;
+};
+
 export const createTrip = async ({
   destination,
   starts_at,
@@ -17,7 +21,7 @@ export const createTrip = async ({
   owner_name,
   owner_email,
 }: CreateTripRequest) => {
-  await api.post("/trips", {
+  const response = await api.post<CreateTripResponse>("/trips", {
     destination,
     starts_at,
     ends_at,
@@ -25,4 +29,6 @@ export const createTrip = async ({
     owner_name,
     owner_email,
   });
+
+  return response.data;
 };

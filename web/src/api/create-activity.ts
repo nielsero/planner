@@ -9,13 +9,22 @@ type CreateActivityRequest = {
   occurs_at: string;
 };
 
+type CreateActivityResponse = {
+  activityId: string;
+};
+
 export const createActivity = async ({
   tripId,
   title,
   occurs_at,
 }: CreateActivityParams & CreateActivityRequest) => {
-  await api.post(`/trips/${tripId}/activities`, {
-    title,
-    occurs_at,
-  });
+  const response = await api.post<CreateActivityResponse>(
+    `/trips/${tripId}/activities`,
+    {
+      title,
+      occurs_at,
+    }
+  );
+
+  return response.data;
 };
