@@ -10,15 +10,20 @@ type DestinationAndDateStepProps = {
   isGuestsInputOpen: boolean;
   openGuestsInput: () => void;
   closeGuestsInput: () => void;
+  setDestination: (destination: string) => void;
+  eventDateRange: DateRange | undefined;
+  setEventDateRange: (eventDateRange: DateRange | undefined) => void;
 };
 
 export function DestinationAndDateStep({
   isGuestsInputOpen,
   openGuestsInput,
   closeGuestsInput,
+  setDestination,
+  eventDateRange,
+  setEventDateRange,
 }: DestinationAndDateStepProps) {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [eventDateRange, setEventDateRange] = useState<DateRange | undefined>();
 
   function openDatePicker() {
     setIsDatePickerOpen(true);
@@ -45,6 +50,7 @@ export function DestinationAndDateStep({
           type="text"
           disabled={isGuestsInputOpen}
           placeholder="Para onde você vai?"
+          onChange={(event) => setDestination(event.target.value)}
         />
       </div>
 
