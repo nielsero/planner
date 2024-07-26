@@ -1,62 +1,60 @@
-import { Calendar, Tag, X } from "lucide-react";
+import { Link2, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
 import { FormEvent } from "react";
-import { useParams } from "react-router-dom";
-import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createActivity } from "../../api/create-activity";
+import { createLink } from "../../api/create-link";
+import { useParams } from "react-router-dom";
 import { Spinner } from "../../components/spinner";
+import { z } from "zod";
 
-type CreateActivityModalProps = {
-  closeCreateActivityModal: () => void;
+type CreateLinkModalProps = {
+  closeCreateLinkModal: () => void;
 };
 
-const createActivitySchema = z.object({
+const createLinkSchema = z.object({
   title: z.string().min(3),
-  occurs_at: z.string().datetime(),
+  url: z.string().url(),
 });
 
-export function CreateActivityModal({
-  closeCreateActivityModal,
-}: CreateActivityModalProps) {
+export function CreateLinkModal({
+  closeCreateLinkModal,
+}: CreateLinkModalProps) {
   const { tripId } = useParams() as { tripId: string };
 
   const queryClient = useQueryClient();
 
-  const { mutateAsync: createActivityFn, isPending: isCreatingActivity } =
-    useMutation({
-      mutationFn: createActivity,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["activities", tripId] });
-      },
-    });
+  const { mutateAsync: createLinkFn, isPending: isCreatingLink } = useMutation({
+    mutationFn: createLink,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["links", tripId] });
+    },
+  });
 
-  async function handleCreateActivity(event: FormEvent<HTMLFormElement>) {
+  async function handleCreateLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     const title = formData.get("title");
-    const occursAt = formData.get("occurs_at");
+    const url = formData.get("url");
 
     try {
-      const activity = createActivitySchema.parse({
-        title,
-        occurs_at: new Date(occursAt as string).toISOString(),
-      });
+      const link = createLinkSchema.parse({ title, url });
 
-      await createActivityFn({
+      await createLinkFn({
         tripId,
-        title: activity.title,
-        occurs_at: activity.occurs_at,
+        title: link.title,
+        url: link.url,
       });
 
-      closeCreateActivityModal();
+      closeCreateLinkModal();
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.error(error.flatten().fieldErrors);
       }
       return;
     }
+
+    console.log({ title, url });
   }
 
   return (
@@ -64,46 +62,46 @@ export function CreateActivityModal({
       <div className="w-[640px] rounded-xl py-5 px-6 shadow-shape bg-zinc-900 space-y-5">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Cadastrar actividade</h2>
+            <h2 className="text-lg font-semibold">Cadastrar link</h2>
             <button>
               <X
                 className="size-5 text-zinc-400"
-                onClick={closeCreateActivityModal}
+                onClick={closeCreateLinkModal}
               />
             </button>
           </div>
           <p className="text-sm text-zinc-400">
-            Todos convidados podem visualizar as actividades.
+            Todos convidados podem visualizar os links importantes.
           </p>
         </div>
 
-        <form onSubmit={handleCreateActivity} className="space-y-3">
+        <form onSubmit={handleCreateLink} className="space-y-3">
           <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
             <Tag className="size-5 text-zinc-400" />
             <input
               className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
               type="text"
               name="title"
-              placeholder="Qual a actividade?"
+              placeholder="Titulo do link"
             />
           </div>
 
           <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
-            <Calendar className="size-5 text-zinc-400" />
+            <Link2 className="size-5 text-zinc-400" />
             <input
               className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
-              type="datetime-local"
-              name="occurs_at"
-              placeholder="Data e horário da actividade"
+              type="url"
+              name="url"
+              placeholder="URL"
             />
           </div>
 
           <Button
             type="submit"
             className="w-full h-11"
-            disabled={isCreatingActivity}
+            disabled={isCreatingLink}
           >
-            {isCreatingActivity ? <Spinner /> : "Salvar actividade"}
+            {isCreatingLink ? <Spinner /> : "Salvar link"}
           </Button>
         </form>
       </div>
