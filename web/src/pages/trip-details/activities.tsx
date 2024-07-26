@@ -1,35 +1,21 @@
 import { CircleCheck } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { api } from "../../lib/api";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
-
-type DailyActivitiesPlan = {
-  date: string;
-  activities: {
-    id: string;
-    title: string;
-    occurs_at: string;
-  }[];
-};
+import { useQuery } from "@tanstack/react-query";
+import { getActivities } from "../../api/get-activities";
 
 export function Activities() {
-  const { tripId } = useParams();
+  const { tripId } = useParams() as { tripId: string };
 
-  const [dailyActivitiesPlan, setDailyActivitiesPlan] = useState<
-    DailyActivitiesPlan[]
-  >([]);
-
-  useEffect(() => {
-    api
-      .get(`/trips/${tripId}/activities`)
-      .then((response) => setDailyActivitiesPlan(response.data.activities));
-  }, [tripId]);
+  const { data: dailyActivitiesPlan } = useQuery({
+    queryKey: ["activity", tripId],
+    queryFn: () => getActivities({ tripId }),
+  });
 
   return (
     <div className="space-y-8">
-      {dailyActivitiesPlan.map((dailyActivities) => {
+      {dailyActivitiesPlan?.activities.map((dailyActivities) => {
         return (
           <div key={dailyActivities.date} className="space-y-2.5">
             <div className="flex gap-2 items-baseline">
@@ -49,7 +35,9 @@ export function Activities() {
                       <CircleCheck className="size-5 text-lime-300" />
                       <span className="text-zinc-100">{activity.title}</span>
                       <span className="text-zinc-400 text-sm ml-auto">
-                        {format(activity.occurs_at, "HH:mm'h'", { locale: pt })}
+                        {format(activity.occurs_at, "HH:mm'h'", {
+                          locale: pt,
+                        })}
                       </span>
                     </div>
                   </div>
