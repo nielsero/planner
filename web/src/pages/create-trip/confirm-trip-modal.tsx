@@ -68,7 +68,11 @@ export function ConfirmTripModal({
             />
           </div>
 
-          <Button type="submit" size="full" disabled={isCreatingTrip}>
+          <Button
+            type="submit"
+            className="w-full h-11"
+            disabled={isCreatingTrip}
+          >
             {isCreatingTrip ? <Spinner /> : "Confirmar criação da viagem"}
           </Button>
         </form>

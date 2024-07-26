@@ -40,7 +40,7 @@ export function ImportantLinks() {
         </div>
       </div>
 
-      <Button variant="secondary" size="full">
+      <Button variant="secondary" className="w-full h-11">
         <Plus className="size-5" />
         Cadastrar novo link
       </Button>

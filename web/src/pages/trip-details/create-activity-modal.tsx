@@ -100,7 +100,11 @@ export function CreateActivityModal({
             />
           </div>
 
-          <Button type="submit" size="full" disabled={isCreatingActivity}>
+          <Button
+            type="submit"
+            className="w-full h-11"
+            disabled={isCreatingActivity}
+          >
             {isCreatingActivity ? <Spinner /> : "Salvar actividade"}
           </Button>
         </form>

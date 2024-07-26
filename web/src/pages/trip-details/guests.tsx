@@ -52,7 +52,7 @@ export function Guests() {
         })}
       </div>
 
-      <Button variant="secondary" size="full">
+      <Button variant="secondary" className="w-full h-11">
         <UserCog className="size-5" />
         Actualizar convidados
       </Button>
