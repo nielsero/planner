@@ -9,7 +9,7 @@ export function Activities() {
   const { tripId } = useParams() as { tripId: string };
 
   const { data: dailyActivitiesPlan } = useQuery({
-    queryKey: ["activity", tripId],
+    queryKey: ["activities", tripId],
     queryFn: () => getActivities({ tripId }),
   });
 

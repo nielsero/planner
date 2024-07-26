@@ -1,31 +1,64 @@
 import { Calendar, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
 import { FormEvent } from "react";
-import { api } from "../../lib/api";
 import { useParams } from "react-router-dom";
+import { z } from "zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createActivity } from "../../api/create-activity";
+import { Spinner } from "../../components/spinner";
 
 type CreateActivityModalProps = {
   closeCreateActivityModal: () => void;
 };
 
+const createActivitySchema = z.object({
+  title: z.string().min(3),
+  occurs_at: z.string().datetime(),
+});
+
 export function CreateActivityModal({
   closeCreateActivityModal,
 }: CreateActivityModalProps) {
-  const { tripId } = useParams();
+  const { tripId } = useParams() as { tripId: string };
 
-  async function createActivity(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+  const queryClient = useQueryClient();
 
-    const title = formData.get("title") as string;
-    const occursAt = formData.get("occurs_at") as string;
-
-    await api.post(`/trips/${tripId}/activities`, {
-      title,
-      occurs_at: occursAt,
+  const { mutateAsync: createActivityFn, isPending: isCreatingActivity } =
+    useMutation({
+      mutationFn: createActivity,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["activities", tripId] });
+      },
     });
 
-    window.document.location.reload();
+  async function handleCreateActivity(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const title = formData.get("title");
+    const occursAt = formData.get("occurs_at");
+
+    console.log({ title, occursAt });
+
+    try {
+      const activity = createActivitySchema.parse({
+        title,
+        occurs_at: new Date(occursAt as string).toISOString(),
+      });
+
+      await createActivityFn({
+        tripId,
+        title: activity.title,
+        occurs_at: activity.occurs_at,
+      });
+
+      closeCreateActivityModal();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(error.flatten().fieldErrors);
+      }
+      return;
+    }
   }
 
   return (
@@ -46,7 +79,7 @@ export function CreateActivityModal({
           </p>
         </div>
 
-        <form onSubmit={createActivity} className="space-y-3">
+        <form onSubmit={handleCreateActivity} className="space-y-3">
           <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
             <Tag className="size-5 text-zinc-400" />
             <input
@@ -67,8 +100,8 @@ export function CreateActivityModal({
             />
           </div>
 
-          <Button type="submit" size="full">
-            Salvar actividade
+          <Button type="submit" size="full" disabled={isCreatingActivity}>
+            {isCreatingActivity ? <Spinner /> : "Salvar actividade"}
           </Button>
         </form>
       </div>
