@@ -5,12 +5,12 @@ type GetParticipantsParams = {
 };
 
 type GetParticipantsResponse = {
-  participants: {
+  participants: Array<{
     id: string;
     name: string | null;
     email: string;
     is_confirmed: boolean;
-  }[];
+  }>;
 };
 
 export const getParticipants = async ({ tripId }: GetParticipantsParams) => {

@@ -5,14 +5,14 @@ type GetActivitiesParams = {
 };
 
 type GetActivitiesResponse = {
-  activities: {
+  activities: Array<{
     date: string;
-    activities: {
+    activities: Array<{
       id: string;
       title: string;
       occurs_at: string;
-    }[];
-  }[];
+    }>;
+  }>;
 };
 
 export const getActivities = async ({ tripId }: GetActivitiesParams) => {
