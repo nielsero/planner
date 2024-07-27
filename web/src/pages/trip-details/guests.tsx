@@ -1,33 +1,23 @@
 import { CheckCircle2, CircleDashed, UserCog } from "lucide-react";
 import { Button } from "../../components/button";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { api } from "../../lib/api";
-
-type Participant = {
-  id: string;
-  name: string | null;
-  email: string;
-  is_confirmed: boolean;
-};
+import { useQuery } from "@tanstack/react-query";
+import { getParticipants } from "../../api/get-participants";
 
 export function Guests() {
-  const { tripId } = useParams();
+  const { tripId } = useParams() as { tripId: string };
 
-  const [participants, setParticipants] = useState<Participant[]>([]);
-
-  useEffect(() => {
-    api
-      .get(`/trips/${tripId}/participants`)
-      .then((response) => setParticipants(response.data.participants));
-  }, [tripId]);
+  const { data } = useQuery({
+    queryKey: ["participants", tripId],
+    queryFn: () => getParticipants({ tripId }),
+  });
 
   return (
     <div className="space-y-6">
       <h2 className="font-semibold text-xl">Convidados</h2>
 
       <div className="space-y-5">
-        {participants.map((participant, index) => {
+        {data?.participants.map((participant, index) => {
           return (
             <div
               key={participant.id}
