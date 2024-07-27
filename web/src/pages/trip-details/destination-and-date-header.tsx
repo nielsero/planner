@@ -1,37 +1,28 @@
 import { MapPin, Calendar, Settings2 } from "lucide-react";
 import { Button } from "../../components/button";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { api } from "../../lib/api";
 import { format } from "date-fns";
-
-type Trip = {
-  id: string;
-  destination: string;
-  starts_at: string;
-  ends_at: string;
-  is_confirmed: boolean;
-};
+import { useQuery } from "@tanstack/react-query";
+import { getTrip } from "../../api/get-trip";
 
 export function DestinationAndDateHeader() {
-  const { tripId } = useParams();
+  const { tripId } = useParams() as { tripId: string };
 
-  const [trip, setTrip] = useState<Trip | null>(null);
+  const { data } = useQuery({
+    queryKey: ["trip", tripId],
+    queryFn: () => getTrip({ tripId }),
+  });
 
-  useEffect(() => {
-    api.get(`/trips/${tripId}`).then((response) => setTrip(response.data.trip));
-  }, [tripId]);
-
-  const displayedDate = trip
-    ? `${format(trip?.starts_at, "d 'de' LLL")} até 
-    ${format(trip?.ends_at, "d 'de' LLL")}`
+  const displayedDate = data
+    ? `${format(data.trip.starts_at, "d 'de' LLL")} até 
+    ${format(data.trip.ends_at, "d 'de' LLL")}`
     : null;
 
   return (
     <header className="px-4 h-16 rounded-xl bg-zinc-900 shadow-shape flex items-center justify-between">
       <div className="flex items-center gap-2">
         <MapPin className="size-5 text-zinc-400" />
-        <span className="text-zinc-100">{trip?.destination}</span>
+        <span className="text-zinc-100">{data?.trip.destination}</span>
       </div>
 
       <div className="flex items-center gap-5">

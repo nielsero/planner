@@ -13,7 +13,7 @@ type ActivitiesProps = {
 export function Activities({ openCreateActivityModal }: ActivitiesProps) {
   const { tripId } = useParams() as { tripId: string };
 
-  const { data: dailyActivitiesPlan } = useQuery({
+  const { data } = useQuery({
     queryKey: ["activities", tripId],
     queryFn: () => getActivities({ tripId }),
   });
@@ -30,7 +30,7 @@ export function Activities({ openCreateActivityModal }: ActivitiesProps) {
       </div>
 
       <div className="space-y-8">
-        {dailyActivitiesPlan?.activities.map((dailyActivities) => {
+        {data?.activities.map((dailyActivities) => {
           return (
             <div key={dailyActivities.date} className="space-y-2.5">
               <div className="flex gap-2 items-baseline">
