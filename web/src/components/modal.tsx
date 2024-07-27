@@ -20,7 +20,8 @@ const modalVariants = tv({
 type ModalProps = {
   title: string;
   description?: string;
-  onClose: () => void;
+  onClose?: () => void;
+  permanent?: boolean;
   children: ReactNode;
 } & ComponentProps<"div"> &
   VariantProps<typeof modalVariants>;
@@ -32,6 +33,7 @@ export function Modal({
   children,
   size,
   className,
+  permanent = false,
   ...props
 }: ModalProps) {
   return (
@@ -40,9 +42,11 @@ export function Modal({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">{title}</h2>
-            <button>
-              <X className="size-5 text-zinc-400" onClick={onClose} />
-            </button>
+            {!permanent ? (
+              <button>
+                <X className="size-5 text-zinc-400" onClick={onClose} />
+              </button>
+            ) : null}
           </div>
           {description && (
             <p className="text-sm text-zinc-400">{description}</p>
