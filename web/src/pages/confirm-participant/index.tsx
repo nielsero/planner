@@ -1,16 +1,29 @@
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
 import { getParticipant } from "../../api/get-participant";
 import { getTrip } from "../../api/get-trip";
 import { Mail, User } from "lucide-react";
 import { Button } from "../../components/button";
 import { format } from "date-fns";
+import { FormEvent } from "react";
+import { updateParticipant } from "../../api/update-participant";
+import { z } from "zod";
+import { Spinner } from "../../components/spinner";
+
+const updateParticipantSchema = z.object({
+  name: z.string().min(3),
+  email: z.string().email(),
+});
 
 export function ConfirmParticipantPage() {
   const { tripId, participantId } = useParams() as {
     tripId: string;
     participantId: string;
   };
+
+  const queryClient = useQueryClient();
+
+  const navigate = useNavigate();
 
   const { data: tripData } = useQuery({
     queryKey: ["trip", tripId],
@@ -21,6 +34,41 @@ export function ConfirmParticipantPage() {
     queryKey: ["participant", participantId],
     queryFn: () => getParticipant({ participantId }),
   });
+
+  const { mutateAsync: updateParticipantFn, isPending: isUpdatingParticipant } =
+    useMutation({
+      mutationFn: updateParticipant,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["participants"] });
+        navigate(`/trips/${tripId}`);
+      },
+    });
+
+  async function handleUpdateParticipant(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const name = formData.get("name");
+    const email = formData.get("email");
+
+    try {
+      const participant = updateParticipantSchema.parse({
+        name,
+        email,
+      });
+
+      await updateParticipantFn({
+        participantId,
+        name: participant.name,
+        email: participant.email,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error(error.flatten().fieldErrors);
+      }
+      return;
+    }
+  }
 
   return (
     <>
@@ -55,7 +103,7 @@ export function ConfirmParticipantPage() {
               Para confirmar sua presença na viagem, preencha os dados abaixo:
             </p>
 
-            <form className="space-y-3" onSubmit={() => {}}>
+            <form className="space-y-3" onSubmit={handleUpdateParticipant}>
               <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
                 <User className="size-5 text-zinc-400" />
                 <input
@@ -63,6 +111,7 @@ export function ConfirmParticipantPage() {
                   type="text"
                   name="name"
                   placeholder="Seu nome completo"
+                  defaultValue={participantData?.participant.name || ""}
                 />
               </div>
 
@@ -77,8 +126,16 @@ export function ConfirmParticipantPage() {
                 />
               </div>
 
-              <Button type="submit" className="w-full h-11">
-                Confirmar minha presença
+              <Button
+                type="submit"
+                className="w-full h-11"
+                disabled={isUpdatingParticipant}
+              >
+                {isUpdatingParticipant ? (
+                  <Spinner />
+                ) : (
+                  "Confirmar minha presença"
+                )}
               </Button>
             </form>
           </div>
