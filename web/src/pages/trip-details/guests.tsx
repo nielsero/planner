@@ -1,20 +1,38 @@
 import { CheckCircle2, CircleDashed, Mail, UserCog } from "lucide-react";
 import { Button } from "../../components/button";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getParticipants } from "../../api/get-participants";
 import { FormEvent, useState } from "react";
 import { Modal } from "../../components/modal";
+import { createInvite } from "../../api/create-invite";
+import { z } from "zod";
+import { Spinner } from "../../components/spinner";
+
+const inviteGuestSchema = z.object({
+  email: z.string().email(),
+});
 
 export function Guests() {
   const { tripId } = useParams() as { tripId: string };
 
   const [isInviteGuestModalOpen, setIsInviteGuestModalOpen] = useState(false);
 
+  const queryClient = useQueryClient();
+
   const { data } = useQuery({
     queryKey: ["participants", tripId],
     queryFn: () => getParticipants({ tripId }),
   });
+
+  const { mutateAsync: createInviteFn, isPending: isCreatingInvite } =
+    useMutation({
+      mutationFn: createInvite,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["participants", tripId] });
+        closeInviteGuestModal();
+      },
+    });
 
   function openInviteGuestModal() {
     setIsInviteGuestModalOpen(true);
@@ -24,8 +42,18 @@ export function Guests() {
     setIsInviteGuestModalOpen(false);
   }
 
-  function handleInviteGuest(event: FormEvent<HTMLFormElement>) {
+  async function handleInviteGuest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email");
+
+    try {
+      const guest = inviteGuestSchema.parse({ email });
+      await createInviteFn({ tripId, email: guest.email });
+    } catch (error) {
+      return;
+    }
   }
 
   return (
@@ -85,8 +113,12 @@ export function Guests() {
               />
             </div>
 
-            <Button type="submit" className="w-full h-11">
-              Adicionar convidado
+            <Button
+              type="submit"
+              className="w-full h-11"
+              disabled={isCreatingInvite}
+            >
+              {isCreatingInvite ? <Spinner /> : "Adicionar convidado"}
             </Button>
           </form>
         </Modal>
