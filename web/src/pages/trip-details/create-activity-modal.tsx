@@ -1,11 +1,15 @@
 import { Calendar, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
-import { FormEvent } from "react";
+import { ChangeEventHandler, FormEvent, useState } from "react";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createActivity } from "../../api/create-activity";
 import { Spinner } from "../../components/spinner";
+import { Modal } from "../../components/modal";
+import { DayPicker } from "react-day-picker";
+import { pt } from "date-fns/locale";
+import { format, setHours, setMinutes } from "date-fns";
 
 type CreateActivityModalProps = {
   closeCreateActivityModal: () => void;
@@ -21,6 +25,11 @@ export function CreateActivityModal({
 }: CreateActivityModalProps) {
   const { tripId } = useParams() as { tripId: string };
 
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [timeValue, setTimeValue] = useState<string>("00:00");
+
   const queryClient = useQueryClient();
 
   const { mutateAsync: createActivityFn, isPending: isCreatingActivity } =
@@ -29,19 +38,67 @@ export function CreateActivityModal({
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["activities", tripId] });
       },
+      onError: (error) => {
+        console.error(error);
+      },
     });
+
+  function openDatePicker() {
+    setIsDatePickerOpen(true);
+  }
+
+  function closeDatePicker() {
+    setIsDatePickerOpen(false);
+  }
+
+  function formatDate(date: Date) {
+    try {
+      return format(date, "dd/MM/yyyy HH:mm");
+    } catch (error) {
+      return "Data invalida";
+    }
+  }
+
+  const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const time = e.target.value;
+    if (!selectedDate) {
+      setTimeValue(time);
+      return;
+    }
+    const [hours, minutes] = time.split(":").map((str) => parseInt(str, 10));
+    const newSelectedDate = setHours(setMinutes(selectedDate, minutes), hours);
+    setSelectedDate(newSelectedDate);
+    setTimeValue(time);
+  };
+
+  const handleDaySelect = (date: Date | undefined) => {
+    if (!timeValue || !date) {
+      setSelectedDate(date);
+      return;
+    }
+    const [hours, minutes] = timeValue
+      .split(":")
+      .map((str) => parseInt(str, 10));
+    const newDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      hours,
+      minutes
+    );
+    setSelectedDate(newDate);
+  };
 
   async function handleCreateActivity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     const title = formData.get("title");
-    const occursAt = formData.get("occurs_at");
 
     try {
       const activity = createActivitySchema.parse({
         title,
-        occurs_at: new Date(occursAt as string).toISOString(),
+        occurs_at: selectedDate?.toISOString(),
       });
 
       await createActivityFn({
@@ -54,6 +111,7 @@ export function CreateActivityModal({
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.error(error.flatten().fieldErrors);
+        console.log("4");
       }
       return;
     }
@@ -88,15 +146,39 @@ export function CreateActivityModal({
             />
           </div>
 
-          <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
+          <button
+            className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2 w-full text-left"
+            onClick={openDatePicker}
+            type="button"
+          >
             <Calendar className="size-5 text-zinc-400" />
-            <input
-              className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
-              type="datetime-local"
-              name="occurs_at"
-              placeholder="Data e horário da actividade"
-            />
-          </div>
+            <span className="text-lg text-zinc-400 flex-1 min-w-40">
+              {selectedDate
+                ? formatDate(selectedDate)
+                : "Data e horário da actividade"}
+            </span>
+          </button>
+
+          {isDatePickerOpen && (
+            <Modal title="Selecione a data" onClose={closeDatePicker}>
+              <div>
+                <span>Horário: </span>
+                <input
+                  type="time"
+                  className="bg-zinc-950 text-lg text-zinc-100 outline-none rounded-lg px-2 py-1"
+                  value={timeValue}
+                  onChange={handleTimeChange}
+                />
+              </div>
+
+              <DayPicker
+                mode="single"
+                locale={pt}
+                selected={selectedDate}
+                onSelect={handleDaySelect}
+              />
+            </Modal>
+          )}
 
           <Button
             type="submit"
