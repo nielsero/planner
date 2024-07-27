@@ -100,6 +100,21 @@ export function DestinationAndDateHeader() {
 
   return (
     <header className="px-4 h-16 rounded-xl bg-zinc-900 shadow-shape flex items-center justify-between">
+      {data && !data.trip.is_confirmed && (
+        <Modal
+          title="Viagem não confirmada"
+          size="lg"
+          description="Foi enviado um e-mail de confirmação para o endereço do criador da viagem."
+          permanent
+        >
+          <p className="text-sm text-zinc-400">
+            <a className="text-zinc-100 underline" href="http://localhost:5173">
+              Clique aqui para criar nova viagem
+            </a>
+          </p>
+        </Modal>
+      )}
+
       <div className="flex items-center gap-2">
         <MapPin className="size-5 text-zinc-400" />
         <span className="text-zinc-100">{data?.trip.destination}</span>
