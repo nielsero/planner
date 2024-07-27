@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
     element: <TripDetailsPage />,
   },
   {
-    path: "/participants/:participantId",
+    path: "trips/:tripId/participants/:participantId",
     element: <ConfirmParticipantPage />,
   },
 ]);
