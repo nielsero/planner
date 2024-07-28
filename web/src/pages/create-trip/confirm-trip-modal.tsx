@@ -1,12 +1,14 @@
 import { Mail, User, X } from "lucide-react";
 import { FormEvent } from "react";
 import { Button } from "../../components/button";
+import { Spinner } from "../../components/spinner";
 
 type ConfirmTripModalProps = {
   closeConfirmTripModal: () => void;
   createTrip: (event: FormEvent<HTMLFormElement>) => void;
   setOwnerName: (ownerName: string) => void;
   setOwnerEmail: (ownerEmail: string) => void;
+  isCreatingTrip: boolean;
 };
 
 export function ConfirmTripModal({
@@ -14,6 +16,7 @@ export function ConfirmTripModal({
   createTrip,
   setOwnerName,
   setOwnerEmail,
+  isCreatingTrip,
 }: ConfirmTripModalProps) {
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
@@ -65,8 +68,12 @@ export function ConfirmTripModal({
             />
           </div>
 
-          <Button type="submit" size="full">
-            Confirmar criação da viagem
+          <Button
+            type="submit"
+            className="w-full h-11"
+            disabled={isCreatingTrip}
+          >
+            {isCreatingTrip ? <Spinner /> : "Confirmar criação da viagem"}
           </Button>
         </form>
       </div>
