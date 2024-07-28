@@ -3,20 +3,24 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { db } from "../lib/db";
 import { ClientError } from "../errors/client-error";
-import { env } from "../env";
 
-export async function confirmParticipant(app: FastifyInstance) {
-  app.withTypeProvider<ZodTypeProvider>().get(
-    "/participants/:participantId/confirm",
+export async function updateParticipant(app: FastifyInstance) {
+  app.withTypeProvider<ZodTypeProvider>().put(
+    "/participants/:participantId",
     {
       schema: {
         params: z.object({
           participantId: z.string().uuid(),
         }),
+        body: z.object({
+          name: z.string().min(3),
+          email: z.string().email(),
+        }),
       },
     },
-    async (request, reply) => {
+    async (request) => {
       const { participantId } = request.params;
+      const { name, email } = request.body;
 
       const participant = await db.participant.findUnique({
         where: { id: participantId },
@@ -26,20 +30,15 @@ export async function confirmParticipant(app: FastifyInstance) {
         throw new ClientError("Participant not found.");
       }
 
-      if (participant.is_confirmed) {
-        return reply.redirect(
-          `${env.WEB_BASE_URL}/trips/${participant.trip_id}`
-        );
-      }
-
       await db.participant.update({
         where: { id: participantId },
-        data: { is_confirmed: true },
+        data: {
+          name,
+          email,
+        },
       });
 
-      return reply.redirect(
-        `${env.WEB_BASE_URL}/trips/${participant.trip_id}/participants/${participant.id}`
-      );
+      return { participantId: participant.id };
     }
   );
 }

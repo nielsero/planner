@@ -1,18 +1,13 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { CreateTripPage } from "./pages/create-trip";
-import { TripDetailsPage } from "./pages/trip-details";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./routes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <CreateTripPage />,
-  },
-  {
-    path: "/trips/:tripId",
-    element: <TripDetailsPage />,
-  },
-]);
+const queryClient = new QueryClient();
 
 export function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
 }

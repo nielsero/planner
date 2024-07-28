@@ -1,10 +1,11 @@
-import { ArrowRight, Calendar, MapPin, Settings2, X } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Settings2 } from "lucide-react";
 import { Button } from "../../../components/button";
 import { useState } from "react";
 import { DateRange, DayPicker } from "react-day-picker";
 import { pt } from "date-fns/locale";
 import "react-day-picker/style.css";
 import { format } from "date-fns";
+import { Modal } from "../../../components/modal";
 
 type DestinationAndDateStepProps = {
   isGuestsInputOpen: boolean;
@@ -66,23 +67,14 @@ export function DestinationAndDateStep({
       </button>
 
       {isDatePickerOpen && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center">
-          <div className="rounded-xl py-5 px-6 shadow-shape bg-zinc-900 space-y-5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Selecione a data</h2>
-              <button>
-                <X className="size-5 text-zinc-400" onClick={closeDatePicker} />
-              </button>
-            </div>
-
-            <DayPicker
-              mode="range"
-              locale={pt}
-              selected={eventDateRange}
-              onSelect={setEventDateRange}
-            />
-          </div>
-        </div>
+        <Modal title="Selecione a data" onClose={closeDatePicker}>
+          <DayPicker
+            mode="range"
+            locale={pt}
+            selected={eventDateRange}
+            onSelect={setEventDateRange}
+          />
+        </Modal>
       )}
 
       <div className="w-px h-6 bg-zinc-800"></div>

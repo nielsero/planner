@@ -1,33 +1,67 @@
-import { CheckCircle2, CircleDashed, UserCog } from "lucide-react";
+import { CheckCircle2, CircleDashed, Mail, UserCog } from "lucide-react";
 import { Button } from "../../components/button";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { api } from "../../lib/api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getParticipants } from "../../api/get-participants";
+import { FormEvent, useState } from "react";
+import { Modal } from "../../components/modal";
+import { createInvite } from "../../api/create-invite";
+import { z } from "zod";
+import { Spinner } from "../../components/spinner";
 
-type Participant = {
-  id: string;
-  name: string | null;
-  email: string;
-  is_confirmed: boolean;
-};
+const inviteGuestSchema = z.object({
+  email: z.string().email(),
+});
 
 export function Guests() {
-  const { tripId } = useParams();
+  const { tripId } = useParams() as { tripId: string };
 
-  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [isInviteGuestModalOpen, setIsInviteGuestModalOpen] = useState(false);
 
-  useEffect(() => {
-    api
-      .get(`/trips/${tripId}/participants`)
-      .then((response) => setParticipants(response.data.participants));
-  }, [tripId]);
+  const queryClient = useQueryClient();
+
+  const { data } = useQuery({
+    queryKey: ["participants", tripId],
+    queryFn: () => getParticipants({ tripId }),
+  });
+
+  const { mutateAsync: createInviteFn, isPending: isCreatingInvite } =
+    useMutation({
+      mutationFn: createInvite,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["participants", tripId] });
+        closeInviteGuestModal();
+      },
+    });
+
+  function openInviteGuestModal() {
+    setIsInviteGuestModalOpen(true);
+  }
+
+  function closeInviteGuestModal() {
+    setIsInviteGuestModalOpen(false);
+  }
+
+  async function handleInviteGuest(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email");
+
+    try {
+      const guest = inviteGuestSchema.parse({ email });
+      await createInviteFn({ tripId, email: guest.email });
+    } catch (error) {
+      return;
+    }
+  }
 
   return (
     <div className="space-y-6">
       <h2 className="font-semibold text-xl">Convidados</h2>
 
       <div className="space-y-5">
-        {participants.map((participant, index) => {
+        {data?.participants.map((participant, index) => {
           return (
             <div
               key={participant.id}
@@ -52,10 +86,43 @@ export function Guests() {
         })}
       </div>
 
-      <Button variant="secondary" size="full">
+      <Button
+        variant="secondary"
+        className="w-full h-11"
+        onClick={openInviteGuestModal}
+      >
         <UserCog className="size-5" />
-        Actualizar convidados
+        Adicionar convidado
       </Button>
+
+      {isInviteGuestModalOpen && (
+        <Modal
+          title="Adicionar convidado"
+          description="O convidado irá receber e-mail para confirmar a participação na viagem."
+          onClose={closeInviteGuestModal}
+          className="w-[640px]"
+        >
+          <form className="space-y-3" onSubmit={handleInviteGuest}>
+            <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2">
+              <Mail className="size-5 text-zinc-400" />
+              <input
+                className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
+                type="email"
+                name="email"
+                placeholder="E-mail do convidado"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-11"
+              disabled={isCreatingInvite}
+            >
+              {isCreatingInvite ? <Spinner /> : "Adicionar convidado"}
+            </Button>
+          </form>
+        </Modal>
+      )}
     </div>
   );
 }

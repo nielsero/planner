@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.51.11",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.414.0",
@@ -17,9 +18,12 @@
     "react-day-picker": "^9.0.4",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1",
-    "tailwind-variants": "^0.2.1"
+    "tailwind-merge": "^2.4.0",
+    "tailwind-variants": "^0.2.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@tanstack/eslint-plugin-query": "^5.51.13",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.15.0",
