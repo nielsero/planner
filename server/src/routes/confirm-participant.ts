@@ -37,7 +37,9 @@ export async function confirmParticipant(app: FastifyInstance) {
         data: { is_confirmed: true },
       });
 
-      return reply.redirect(`${env.WEB_BASE_URL}/trips/${participant.trip_id}`);
+      return reply.redirect(
+        `${env.WEB_BASE_URL}/trips/${participant.trip_id}/participants/${participant.id}`
+      );
     }
   );
 }
