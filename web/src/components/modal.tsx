@@ -41,7 +41,7 @@ export function Modal({
       <div {...props} className={modalVariants({ size, className })}>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">{title}</h2>
+            <h2 className="text-lg font-semibold flex-1">{title}</h2>
             {!permanent ? (
               <button>
                 <X className="size-5 text-zinc-400" onClick={onClose} />

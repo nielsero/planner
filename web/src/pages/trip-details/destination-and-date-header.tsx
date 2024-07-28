@@ -1,6 +1,6 @@
 import { MapPin, Calendar, Settings2 } from "lucide-react";
 import { Button } from "../../components/button";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTrip } from "../../api/get-trip";
@@ -105,12 +105,18 @@ export function DestinationAndDateHeader() {
           title="Viagem não confirmada"
           size="lg"
           description="Foi enviado um e-mail de confirmação para o endereço do criador da viagem."
+          className="text-center"
           permanent
         >
+          <img
+            src="/no-travelling.png"
+            alt="no travelling"
+            className="w-40 mx-auto"
+          />
           <p className="text-sm text-zinc-400">
-            <a className="text-zinc-100 underline" href="http://localhost:5173">
-              Clique aqui para criar nova viagem
-            </a>
+            <Link to="/" className="text-zinc-100 underline">
+              Voltar para a página inicial
+            </Link>
           </p>
         </Modal>
       )}
