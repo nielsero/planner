@@ -19,6 +19,7 @@ import { getParticipant } from "./routes/get-participant";
 import { errorHandler } from "./error-handler";
 import { env } from "./env";
 import { updateParticipant } from "./routes/update-participant";
+import { health } from "./routes/health";
 
 const app = fastify();
 
@@ -31,6 +32,7 @@ app.setSerializerCompiler(serializerCompiler);
 
 app.setErrorHandler(errorHandler);
 
+app.register(health);
 app.register(createTrip);
 app.register(confirmTrip);
 app.register(confirmParticipant);
