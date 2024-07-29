@@ -68,6 +68,12 @@ app.register(getTripDetails);
 app.register(getParticipant);
 app.register(updateParticipant);
 
-app.listen({ port: env.PORT }, () => {
-  console.log("Server running!");
-});
+app.listen(
+  {
+    port: env.PORT,
+    host: env.NODE_ENV === "production" ? "0.0.0.0" : "127.0.0.1",
+  },
+  () => {
+    console.log("Server running!");
+  }
+);
