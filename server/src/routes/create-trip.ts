@@ -10,7 +10,7 @@ import { env } from "../env";
 
 export async function createTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    "/trips",
+    "/api/trips",
     {
       schema: {
         body: z.object({
