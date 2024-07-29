@@ -1,4 +1,5 @@
 import fastify from "fastify";
+import fastifyStatic from "@fastify/static";
 import cors from "@fastify/cors";
 import {
   serializerCompiler,
@@ -20,12 +21,32 @@ import { errorHandler } from "./error-handler";
 import { env } from "./env";
 import { updateParticipant } from "./routes/update-participant";
 import { health } from "./routes/health";
+import path from "path";
 
 const app = fastify();
 
 app.register(cors, {
   origin: "*",
 });
+
+app.register(fastifyStatic, {
+  root: path.join(__dirname, "..", "public"),
+});
+
+app.get("/", async (request, reply) => {
+  return reply.sendFile("index.html");
+});
+
+app.get("/trips/:tripId", async (request, reply) => {
+  return reply.sendFile("index.html");
+});
+
+app.get(
+  "/trips/:tripId/participants/:participantId",
+  async (request, reply) => {
+    return reply.sendFile("index.html");
+  }
+);
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
