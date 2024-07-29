@@ -23,7 +23,7 @@ import { updateParticipant } from "./routes/update-participant";
 import { health } from "./routes/health";
 import path from "path";
 
-const app = fastify();
+const app = fastify({ logger: true });
 
 app.register(cors, {
   origin: "*",
