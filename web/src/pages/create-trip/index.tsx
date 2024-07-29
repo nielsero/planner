@@ -172,6 +172,8 @@ export function CreateTripPage() {
 
       {isConfirmTripModalOpen && (
         <ConfirmTripModal
+          destination={destination}
+          eventDateRange={eventDateRange}
           closeConfirmTripModal={closeConfirmTripModal}
           createTrip={handleCreateTrip}
           setOwnerName={setOwnerName}
