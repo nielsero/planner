@@ -68,8 +68,10 @@ Planner é uma aplicação web para planeamento de viagens. Permite aos utilizad
 
 7. Instale as dependências no cliente:
 
+   Abra um novo terminal (dentro do planner) e execute:
+
    ```bash
-   cd ../web
+   cd web
    npm install
    ```
 
