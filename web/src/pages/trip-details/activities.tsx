@@ -20,12 +20,12 @@ export function Activities({ openCreateActivityModal }: ActivitiesProps) {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
         <h2 className="text-3xl font-semibold">Actividades</h2>
 
         <Button onClick={openCreateActivityModal}>
           <Plus className="size-5" />
-          Cadastrar actividade
+          Cadastrar <span className="sm:hidden lg:inline">actividade</span>
         </Button>
       </div>
 
