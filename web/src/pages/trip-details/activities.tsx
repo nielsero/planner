@@ -20,7 +20,7 @@ export function Activities({ openCreateActivityModal }: ActivitiesProps) {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <h2 className="text-3xl font-semibold">Actividades</h2>
 
         <Button onClick={openCreateActivityModal}>
