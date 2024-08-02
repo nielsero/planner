@@ -1,6 +1,6 @@
 # Planner
 
-Planner é uma aplicação web para planeamento de viagens. Permite aos utilizadores planear viagens, convidar participantes, enviar confirmações por e-mail, adicionar atividades e links importantes, e gerir os detalhes da viagem.
+Planner é uma aplicação web para planeamento de viagens. Permite aos utilizadores planear viagens, convidar participantes, enviar confirmações por e-mail, adicionar atividades e links importantes, e gerir os detalhes da viagem. Este projecto é uma continuação do evento NLW Journey da Rocketseat.
 
 ## Tecnologias Utilizadas
 
