@@ -121,7 +121,7 @@ export function CreateTripPage() {
       <div className="max-w-3xl w-full px-6 space-y-10">
         <header className="flex flex-col items-center gap-3">
           <img src="/logo.svg" alt="planner logo" />
-          <p className="text-zinc-300 text-lg">
+          <p className="text-zinc-300 text-lg text-center">
             Convide seus amigos e planeje sua próxima viagem!
           </p>
         </header>
