@@ -99,7 +99,7 @@ export function DestinationAndDateHeader() {
   }
 
   return (
-    <header className="px-4 h-16 rounded-xl bg-zinc-900 shadow-shape flex items-center justify-between">
+    <header className="px-4 py-4 md:py-2 rounded-xl bg-zinc-900 shadow-shape flex flex-col md:flex-row md:justify-between gap-5 md:gap-2">
       {data && !data.trip.is_confirmed && (
         <Modal
           title="Viagem não confirmada"
@@ -121,18 +121,18 @@ export function DestinationAndDateHeader() {
         </Modal>
       )}
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-2">
         <MapPin className="size-5 text-zinc-400" />
         <span className="text-zinc-100">{data?.trip.destination}</span>
       </div>
 
-      <div className="flex items-center gap-5">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col md:flex-row gap-5">
+        <div className="flex items-center justify-center gap-2">
           <Calendar className="size-5 text-zinc-400" />
           <span className="text-zinc-100">{displayedDate}</span>
         </div>
 
-        <div className="w-px h-6 bg-zinc-800"></div>
+        <div className="hidden md:block w-px h-6 bg-zinc-800"></div>
 
         <Button variant="secondary" onClick={openUpdateTripModal}>
           Alterar local/data

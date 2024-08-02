@@ -31,12 +31,12 @@ export function TripDetailsPage() {
     <div className="max-w-6xl px-6 py-10 mx-auto space-y-8">
       <DestinationAndDateHeader />
 
-      <main className="flex gap-16 px-4">
+      <main className="flex flex-col md:flex-row gap-16 px-4">
         <div className="flex-1 space-y-6">
           <Activities openCreateActivityModal={openCreateActivityModal} />
         </div>
 
-        <div className="w-80 space-y-6">
+        <div className="w-full md:w-80 space-y-6">
           <ImportantLinks openCreateLinkModal={openCreateLinkModal} />
           <div className="w-full h-px bg-zinc-800"></div>
           <Guests />
