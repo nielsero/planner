@@ -148,7 +148,7 @@ export function CreateTripPage() {
         <footer className="text-center">
           <p className="text-sm text-zinc-500">
             Ao planejar sua viagem pela Planner você automaticamente concorda{" "}
-            <br /> com nossos{" "}
+            <br className="hidden sm:block" /> com nossos{" "}
             <a className="text-zinc-300 underline" href="#">
               termos de uso
             </a>{" "}
