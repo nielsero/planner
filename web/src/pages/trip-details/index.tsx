@@ -36,7 +36,7 @@ export function TripDetailsPage() {
           <Activities openCreateActivityModal={openCreateActivityModal} />
         </div>
 
-        <div className="w-80 space-y-6">
+        <div className="w-full md:w-80 space-y-6">
           <ImportantLinks openCreateLinkModal={openCreateLinkModal} />
           <div className="w-full h-px bg-zinc-800"></div>
           <Guests />
